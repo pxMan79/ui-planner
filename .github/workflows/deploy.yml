@@ -1,0 +1,35 @@
+name: Deploy UI Planner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: server
+
+    steps:
+      - name: Deploy to 52 server
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            set -e
+            mkdir -p /opt/projects
+
+            if [ ! -d /opt/projects/ui-planner/.git ]; then
+              git clone --branch main https://github.com/pxMan79/UI-Planner.git /opt/projects/ui-planner
+            fi
+
+            cd /opt/projects/ui-planner
+            git fetch --all
+            git reset --hard origin/main
+
+            mkdir -p data/projects
+
+            docker compose -f docker/ui-planner/docker-compose.yml up -d --build --remove-orphans

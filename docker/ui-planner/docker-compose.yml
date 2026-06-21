@@ -1,0 +1,14 @@
+services:
+  ui-planner:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: ui-planner
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+    ports:
+      - "3217:3000"
+    volumes:
+      - ../../data:/app/data

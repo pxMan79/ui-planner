@@ -39,6 +39,18 @@ npm run server
 | `npm run lint` | ESLint |
 | `npm run build` | 构建前端到 `dist/` |
 
+## 部署
+
+- 仓库内已提供 `Dockerfile` 与 `docker/ui-planner/docker-compose.yml`。
+- GitHub Actions 工作流位于 `.github/workflows/deploy.yml`，在 `main` 分支 push 后触发。
+- workflow 使用 `environment: server`，默认读取以下 Secrets：
+  - `SERVER_HOST`
+  - `SERVER_USER`
+  - `SERVER_KEY`
+- 服务器目录约定为 `/opt/projects/ui-planner`，首次部署会自动 clone，之后每次都会 `git fetch --all && git reset --hard origin/main`。
+- 容器默认把宿主机 `3217` 端口映射到应用 `3000` 端口，项目数据持久化在仓库下的 `data/` 目录。
+- 如果前面挂了 Nginx Proxy Manager，只需要把域名反代到 `127.0.0.1:3217`。
+
 ## 功能
 
 - **画布拖拽**：空白处拖拽框选创建模块；拖拽模块重叠到另一模块上自动合并为父子分组，
